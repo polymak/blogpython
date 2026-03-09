@@ -102,7 +102,7 @@ def login_view(request):
         
         user = authenticate(username=username, password=password)
         
-        if user is not None and (user.is_staff or user.role == 'admin'):
+        if user is not None:
             # Create or get token
             token, created = Token.objects.get_or_create(user=user)
             
@@ -111,12 +111,11 @@ def login_view(request):
                 'user': {
                     'id': user.id,
                     'username': user.username,
-                    'email': user.email,
-                    'role': user.role
+                    'email': user.email
                 }
             })
         else:
-            return Response({'error': 'Invalid credentials or insufficient permissions'}, 
+            return Response({'error': 'Invalid username or password'}, 
                           status=status.HTTP_401_UNAUTHORIZED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -142,8 +141,7 @@ def check_auth(request):
         'user': {
             'id': request.user.id,
             'username': request.user.username,
-            'email': request.user.email,
-            'role': request.user.role
+            'email': request.user.email
         }
     })
 
@@ -175,9 +173,6 @@ def contact_api(request):
 @permission_classes([permissions.IsAuthenticated])
 def dashboard_api(request):
     """API endpoint for dashboard summary"""
-    if not (request.user.is_staff or request.user.role == 'admin'):
-        return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
-
     blog_count = Blog.objects.count()
     user_count = CustomUser.objects.count()
 
@@ -187,8 +182,7 @@ def dashboard_api(request):
             'total_users': user_count,
             'user_info': {
                 'username': request.user.username,
-                'email': request.user.email,
-                'role': request.user.role
+                'email': request.user.email
             }
         }
     })

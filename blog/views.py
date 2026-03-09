@@ -6,11 +6,6 @@ from .models import Blog, CustomUser
 from .forms import BlogForm, UserForm
 
 
-def is_admin_user(user):
-    """Vérifie si l'utilisateur est un administrateur autorisé"""
-    return user.is_authenticated and user.is_active and (
-        user.is_staff or user.is_superuser or user.role == 'admin'
-    )
 
 
 def home(request):
@@ -20,40 +15,32 @@ def home(request):
 
 
 def user_login(request):
-    """Admin login page"""
+    """User login page"""
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
 
-        if user is not None and is_admin_user(user):
+        if user is not None:
             login(request, user)
             messages.success(request, 'Connexion réussie.')
             return redirect('dashboard')
         else:
-            messages.error(request, 'Identifiants invalides ou utilisateur non autorisé comme admin.')
+            messages.error(request, 'Identifiants invalides.')
 
     return render(request, 'blog/login.html')
 
 
 @login_required
 def dashboard(request):
-    """Admin dashboard"""
-    if not is_admin_user(request.user):
-        messages.error(request, 'Accès refusé.')
-        return redirect('login')
-
+    """User dashboard"""
     return render(request, 'blog/dashboard.html')
 
 
 @login_required
 def admin_dashboard(request):
-    """Admin dashboard (alternative route)"""
-    if not is_admin_user(request.user):
-        messages.error(request, 'Accès refusé.')
-        return redirect('login')
-
+    """User dashboard (alternative route)"""
     return render(request, 'blog/dashboard.html')
 
 
@@ -65,11 +52,7 @@ def blog_detail(request, pk):
 
 @login_required
 def blog_list(request):
-    """List all blogs in admin panel"""
-    if not is_admin_user(request.user):
-        messages.error(request, 'Accès refusé.')
-        return redirect('login')
-
+    """List all blogs"""
     blogs = Blog.objects.all()
     return render(request, 'blog/admin/blog_list.html', {'blogs': blogs})
 
@@ -77,10 +60,6 @@ def blog_list(request):
 @login_required
 def blog_create(request):
     """Create new blog post"""
-    if not is_admin_user(request.user):
-        messages.error(request, 'Accès refusé.')
-        return redirect('login')
-
     if request.method == 'POST':
         form = BlogForm(request.POST, request.FILES)
         if form.is_valid():
@@ -96,10 +75,6 @@ def blog_create(request):
 @login_required
 def blog_edit(request, pk):
     """Edit existing blog post"""
-    if not is_admin_user(request.user):
-        messages.error(request, 'Accès refusé.')
-        return redirect('login')
-
     blog = get_object_or_404(Blog, pk=pk)
 
     if request.method == 'POST':
@@ -121,10 +96,6 @@ def blog_edit(request, pk):
 @login_required
 def blog_delete(request, pk):
     """Delete blog post"""
-    if not is_admin_user(request.user):
-        messages.error(request, 'Accès refusé.')
-        return redirect('login')
-
     blog = get_object_or_404(Blog, pk=pk)
 
     if request.method == 'POST':
@@ -137,34 +108,19 @@ def blog_delete(request, pk):
 
 @login_required
 def user_list(request):
-    """List all admin users"""
-    if not is_admin_user(request.user):
-        messages.error(request, 'Accès refusé.')
-        return redirect('login')
-
+    """List all users"""
     users = CustomUser.objects.all()
     return render(request, 'blog/admin/user_list.html', {'users': users})
 
 
 @login_required
 def user_create(request):
-    """Create new admin user"""
-    if not is_admin_user(request.user):
-        messages.error(request, 'Accès refusé.')
-        return redirect('login')
-
+    """Create new user"""
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
-
-            # Définir automatiquement le nouvel utilisateur comme admin
-            if not user.role:
-                user.role = 'admin'
-            user.is_staff = True
-            user.is_active = True
-
             user.save()
             messages.success(request, 'Utilisateur créé avec succès.')
             return redirect('user_list')
@@ -176,11 +132,7 @@ def user_create(request):
 
 @login_required
 def user_delete(request, pk):
-    """Delete admin user"""
-    if not is_admin_user(request.user):
-        messages.error(request, 'Accès refusé.')
-        return redirect('login')
-
+    """Delete user"""
     user = get_object_or_404(CustomUser, pk=pk)
 
     if request.method == 'POST':
