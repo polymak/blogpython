@@ -33,8 +33,6 @@ urlpatterns = [
     path('api/logout/', api_views.logout_view, name='api-logout'),
     path('api/check-auth/', api_views.check_auth, name='api-check-auth'),
     
-    # New dedicated API for Flutter app
-# path('api/v1/', include('blogsite_python_flutter.api.urls')),
 ]
 
 if settings.DEBUG:

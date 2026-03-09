@@ -196,3 +196,7 @@ def user_logout(request):
     logout(request)
     messages.success(request, 'Déconnexion réussie.')
     return redirect('home')
+
+def contact_view(request):
+    """Contact page for non-authenticated users"""
+    return render(request, 'blog/contact.html')
