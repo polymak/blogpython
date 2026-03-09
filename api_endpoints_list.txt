@@ -1,0 +1,165 @@
+# Django BlogSite API Endpoints Documentation
+
+## WEB ROUTES (HTML Pages)
+
+### Public Routes
+- `/` - Home page (shows all blog posts)
+- `/home/` - Home page (alias)
+- `/contact/` - Contact page (only visible to non-authenticated users)
+- `/login/` - Admin login page
+- `/blog/<id>/` - Individual blog post detail page
+
+### Admin Routes (require authentication)
+- `/dashboard/` - Admin dashboard
+- `/admin/dashboard/` - Admin dashboard (alternative)
+- `/blogs/` - List all blogs in admin panel
+- `/blogs/create/` - Create new blog post
+- `/blogs/<id>/edit/` - Edit existing blog post
+- `/blogs/<id>/delete/` - Delete blog post
+- `/users/` - List all admin users
+- `/users/create/` - Create new admin user
+- `/users/<id>/delete/` - Delete admin user
+- `/logout/` - Logout user
+
+## API ROUTES (JSON Responses)
+
+### Authentication API
+- `GET /api/check-auth/` - Check if user is authenticated
+  - Requires: Authentication token
+  - Response: `{authenticated: true, user: {id, username, email, role}}`
+
+- `POST /api/login/` - User login
+  - Body: `{username: string, password: string}`
+  - Response: `{token: string, user: {id, username, email, role}}`
+
+- `POST /api/logout/` - User logout
+  - Requires: Authentication token
+  - Response: `{message: "Successfully logged out"}`
+
+### Blog API
+- `GET /api/blogs/` - List all blog posts
+  - Response: `[{id, title, content, image, created_at, updated_at}, ...]`
+
+- `POST /api/blogs/` - Create new blog post
+  - Requires: Admin authentication
+  - Body: `{title: string, content: string, image: file (optional)}`
+  - Response: `{id, title, content, image, created_at, updated_at}`
+
+- `GET /api/blogs/<id>/` - Get specific blog post
+  - Response: `{id, title, content, image, created_at, updated_at}`
+
+- `PUT /api/blogs/<id>/` - Update blog post
+  - Requires: Admin authentication
+  - Body: `{title: string, content: string, image: file (optional)}`
+  - Response: `{id, title, content, image, created_at, updated_at}`
+
+- `DELETE /api/blogs/<id>/` - Delete blog post
+  - Requires: Admin authentication
+  - Response: `HTTP 204 No Content`
+
+### User API
+- `GET /api/users/` - List all users
+  - Requires: Admin authentication
+  - Response: `[{id, username, email, role, date_joined}, ...]`
+
+- `POST /api/users/` - Create new user
+  - Requires: Admin authentication
+  - Body: `{username: string, email: string, password: string, role: string}`
+  - Response: `{id, username, email, role, date_joined}`
+
+- `GET /api/users/<id>/` - Get specific user
+  - Requires: Admin authentication
+  - Response: `{id, username, email, role, date_joined}`
+
+- `PUT /api/users/<id>/` - Update user
+  - Requires: Admin authentication
+  - Body: `{username: string, email: string, role: string}`
+  - Response: `{id, username, email, role, date_joined}`
+
+- `DELETE /api/users/<id>/` - Delete user
+  - Requires: Admin authentication
+  - Response: `HTTP 204 No Content`
+
+### Content API
+- `GET /api/home/` - Home page content
+  - Response: `{title: string, description: string, contact_info: {email, phone}}`
+
+- `GET /api/contact/` - Contact information
+  - Response: `{title: string, email: string, phone: string, message: string}`
+
+- `GET /api/dashboard/` - Dashboard summary
+  - Requires: Admin authentication
+  - Response: `{dashboard_summary: {total_blogs: number, total_users: number, user_info: {username, email, role}}}`
+
+## Testing Instructions
+
+### Test Web Routes
+1. Run development server: `python manage.py runserver`
+2. Open browser and visit:
+   - `http://localhost:8000/` - Home page
+   - `http://localhost:8000/contact/` - Contact page
+   - `http://localhost:8000/login/` - Login page
+
+### Test API Routes
+1. Run development server: `python manage.py runserver`
+2. Use curl, Postman, or any API client to test endpoints:
+
+#### Test public API endpoints:
+```bash
+curl http://localhost:8000/api/home/
+curl http://localhost:8000/api/contact/
+curl http://localhost:8000/api/blogs/
+```
+
+#### Test authentication:
+```bash
+# Login
+curl -X POST http://localhost:8000/api/login/ \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "yourpassword"}'
+
+# Use the returned token for authenticated requests
+curl -H "Authorization: Token YOUR_TOKEN_HERE" http://localhost:8000/api/check-auth/
+```
+
+#### Test admin-only endpoints:
+```bash
+# Get dashboard summary
+curl -H "Authorization: Token YOUR_TOKEN_HERE" http://localhost:8000/api/dashboard/
+
+# Create blog post
+curl -X POST http://localhost:8000/api/blogs/ \
+  -H "Authorization: Token YOUR_TOKEN_HERE" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "New Post", "content": "Post content here"}'
+```
+
+## Implementation Summary
+
+### Files Created
+- `api_endpoints_list.txt` - This documentation file
+
+### Files Modified
+- `urls.py` - Organized API routes under `/api/` prefix
+- `blog/api_views.py` - Added new API endpoints for home, contact, and dashboard
+
+### Web Routes Preserved
+- All existing HTML routes continue to work exactly as before
+- Contact page only visible to non-authenticated users
+- Admin routes protected by authentication
+
+### API Routes Added
+- 13 new API endpoints organized under `/api/` prefix
+- Full CRUD operations for blogs and users
+- Authentication endpoints (login, logout, check-auth)
+- Content endpoints (home, contact, dashboard)
+- Proper permission handling
+- JSON responses ready for Flutter/Android consumption
+
+### Key Features
+- **Separation of concerns**: Web views in `views.py`, API views in `api_views.py`
+- **Consistent API structure**: All API routes under `/api/` prefix
+- **Proper authentication**: Token-based auth for API, session-based for web
+- **Permission handling**: Admin-only endpoints protected
+- **Backward compatibility**: All existing web functionality preserved
+- **Flutter-ready**: Clean JSON responses with proper field names

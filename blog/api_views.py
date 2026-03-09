@@ -146,3 +146,49 @@ def check_auth(request):
             'role': request.user.role
         }
     })
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def home_api(request):
+    """API endpoint for home page content"""
+    return Response({
+        'title': 'Welcome to BlogPython',
+        'description': 'Discover our latest articles and news',
+        'contact_info': {
+            'email': 'polycarpemakombo@gmail.com',
+            'phone': '+243822012578'
+        }
+    })
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def contact_api(request):
+    """API endpoint for contact information"""
+    return Response({
+        'title': 'Contact Us',
+        'email': 'polycarpemakombo@gmail.com',
+        'phone': '+243822012578',
+        'message': 'Feel free to reach out to us for any questions or inquiries.'
+    })
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def dashboard_api(request):
+    """API endpoint for dashboard summary"""
+    if not (request.user.is_staff or request.user.role == 'admin'):
+        return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+
+    blog_count = Blog.objects.count()
+    user_count = CustomUser.objects.count()
+
+    return Response({
+        'dashboard_summary': {
+            'total_blogs': blog_count,
+            'total_users': user_count,
+            'user_info': {
+                'username': request.user.username,
+                'email': request.user.email,
+                'role': request.user.role
+            }
+        }
+    })

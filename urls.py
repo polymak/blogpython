@@ -23,16 +23,27 @@ from blog import api_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('blog.urls')),
-    
-    # Legacy API endpoints (for backward compatibility)
-    path('api/blogs/', api_views.BlogListCreateView.as_view(), name='api-blog-list-create'),
-    path('api/blogs/<int:pk>/', api_views.BlogDetailView.as_view(), name='api-blog-detail'),
-    path('api/users/', api_views.UserListCreateView.as_view(), name='api-user-list-create'),
-    path('api/users/<int:pk>/', api_views.UserDetailView.as_view(), name='api-user-detail'),
-    path('api/login/', api_views.login_view, name='api-login'),
-    path('api/logout/', api_views.logout_view, name='api-logout'),
-    path('api/check-auth/', api_views.check_auth, name='api-check-auth'),
-    
+
+    # API endpoints - all under /api/ prefix
+    path('api/', include([
+        # Blog API endpoints
+        path('blogs/', api_views.BlogListCreateView.as_view(), name='api-blog-list-create'),
+        path('blogs/<int:pk>/', api_views.BlogDetailView.as_view(), name='api-blog-detail'),
+
+        # User API endpoints
+        path('users/', api_views.UserListCreateView.as_view(), name='api-user-list-create'),
+        path('users/<int:pk>/', api_views.UserDetailView.as_view(), name='api-user-detail'),
+
+        # Authentication API endpoints
+        path('login/', api_views.login_view, name='api-login'),
+        path('logout/', api_views.logout_view, name='api-logout'),
+        path('check-auth/', api_views.check_auth, name='api-check-auth'),
+
+        # Content API endpoints
+        path('home/', api_views.home_api, name='api-home'),
+        path('contact/', api_views.contact_api, name='api-contact'),
+        path('dashboard/', api_views.dashboard_api, name='api-dashboard'),
+    ])),
 ]
 
 if settings.DEBUG:
