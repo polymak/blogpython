@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environnements virtuels
+.venv/
+venv/
+env/
+
+# Variables sensibles
+.env
+.env.*
+*.env
+
+# Base de données locale seulement
+db.sqlite3
+*.sqlite3
+
+# Fichiers média uploadés par les utilisateurs
+media/
+
+# Fichiers statiques générés en production
+staticfiles/
+
+# Logs
+*.log
+
+# Fichiers système / éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Git local
+.git/
+
+# Fichiers sensibles serveur à ne pas écraser
+settings.py
+
+# Optionnel : si vous ne voulez jamais toucher à ces fichiers
+# wsgi.py
+# asgi.py
+
+# Migrations compilées / cache
+**/__pycache__/
+
+# Tests / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Build
+dist/
+build/

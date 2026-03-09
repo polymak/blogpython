@@ -1,0 +1,48 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}Dashboard - BlogPython{% endblock %}
+
+{% block content %}
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Tableau de Bord</h1>
+        <p class="text-xl text-gray-600">Bienvenue, {{ user.username }}!</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Blogs Section -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-semibold text-gray-900">Articles</h2>
+                <a href="{% url 'blog_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md font-medium transition-colors btn-hover">
+                    Nouvel article
+                </a>
+            </div>
+            <p class="text-gray-600 mb-4">Gérez vos articles de blog</p>
+            <div class="space-y-3">
+                <a href="{% url 'blog_list' %}" class="block w-full text-left bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md transition-colors">
+                    Voir tous les articles
+                </a>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-semibold text-gray-900">Utilisateurs</h2>
+                <a href="{% url 'user_create' %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md font-medium transition-colors btn-hover">
+                    Nouvel utilisateur
+                </a>
+            </div>
+            <p class="text-gray-600 mb-4">Gérez les utilisateurs administrateurs</p>
+            <div class="space-y-3">
+                <a href="{% url 'user_list' %}" class="block w-full text-left bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md transition-colors">
+                    Voir tous les utilisateurs
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 text-center">
+        <p class="text-gray-500">Utilisez le menu de navigation pour accéder aux différentes sections.</p>
+    </div>
+{% endblock %}
